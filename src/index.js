@@ -1,6 +1,5 @@
 const fetch = require('cross-fetch');
-const hash =  require('hash-wasm');
-
+import argon2 from 'react-native-argon2';
 
 const buffer = require('buffer/').Buffer;
 
@@ -32,7 +31,7 @@ module.exports = class IonProofOfWork {
         const challengeNonce = challengeBody.challengeNonce;
         const largestAllowedHash = challengeBody.largestAllowedHash;
         const validDuration = challengeBody.validDurationInMinutes * 60 * 1000;
-    
+
         let answerHash = '';
         let answerNonce = '';
 
@@ -40,24 +39,21 @@ module.exports = class IonProofOfWork {
         const startTime = Date.now();
         do {
             answerNonce = this.randomHexString();
-            answerHash = await hash.argon2id({
-                password: buffer.from(answerNonce, 'hex').toString() + requestBody,
-                salt: buffer.from(challengeNonce, 'hex'),
-                parallelism: 1,
-                iterations: 1,
-                memorySize: 1000,
-                hashLength: 32, // output size = 32 bytes
-                outputType: 'hex',
-            });
-            console.log(answerHash);
-            console.log(largestAllowedHash);
+            const { rawHash } = await argon2(
+                buffer.from(answerNonce, 'hex').toString() + requestBody,
+                buffer.from(challengeNonce, 'hex').toString(),
+                {
+                    iterations: 1,
+                    memory: 1000,
+                }
+            );
+            answerHash = rawHash
         } while (answerHash > largestAllowedHash && Date.now() - startTime < validDuration);
 
         if (Date.now() - startTime >  validDuration) {
             return;
         }
 
-        console.log('3')
         const response = await fetch(solveChallengeUri, {
             method: 'POST',
             mode: 'cors',

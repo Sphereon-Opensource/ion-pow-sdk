@@ -1,5 +1,5 @@
 {
-  "name": "ion-pow-sdk",
+  "name": "@sphereon/ion-pow-sdk",
   "version": "1.0.15",
   "description": "sdk to perform proof of work for ION",
   "main": "src/index.js",
@@ -25,7 +25,7 @@
   "dependencies": {
     "buffer": "6.0.3",
     "cross-fetch": "3.1.2",
-    "hash-wasm": "4.4.1"
+    "react-native-argon2": "^2.0.1"
   },
   "devDependencies": {
     "http-server": "0.12.3",
