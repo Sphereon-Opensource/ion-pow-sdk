@@ -1,5 +1,5 @@
 const fetch = require('cross-fetch');
-import argon2 from 'react-native-argon2';
+import argon2 from '@sphereon/react-native-argon2';
 
 const buffer = require('buffer/').Buffer;
 
@@ -41,7 +41,7 @@ module.exports = class IonProofOfWork {
             answerNonce = this.randomHexString();
             const { rawHash } = await argon2(
                 buffer.from(answerNonce, 'hex').toString() + requestBody,
-                buffer.from(challengeNonce, 'hex').toString(),
+                challengeNonce,
                 {
                     iterations: 1,
                     memory: 1000,
